@@ -41,6 +41,8 @@ int main(int argc, char** argv) {
   
   string astralpath = string(dirname(argv[0]), dirname_length) + "/Astral/astral.5.5.9.jar";
 
+  cout << astralpath << endl;
+
   Logger::disable("DEBUG");
 
   Config conf;  

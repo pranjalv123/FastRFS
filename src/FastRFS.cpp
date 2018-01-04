@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
   wai_getExecutablePath(path, path_length, &dirname_length);  
   path[path_length] = '\0';
   
-  string astralpath = string(dirname(argv[0]), dirname_length - 1) + "/Astral/astral.5.5.9.jar";
+  string astralpath = string(path, dirname_length) + "/Astral/astral.5.5.9.jar";
 
   cout << astralpath << endl;
 

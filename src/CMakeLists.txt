@@ -8,5 +8,6 @@ add_definitions(-std=c++14 -g -O3 -Wall)
 add_executable(FastRFS ${SOURCES} FastRFS.cpp)
 target_link_libraries(FastRFS phylokit phylonaut)
 
+INCLUDE_DIRECTORIES("boost/" )
 install(TARGETS FastRFS 
 		RUNTIME DESTINATION bin)

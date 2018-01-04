@@ -12,6 +12,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <libgen.h>
+#include "whereami.h"
 
 using namespace std;
 
@@ -23,9 +24,22 @@ int main(int argc, char** argv) {
   string extra = "";
   int debug = 0;
 
-  vector<string> output_labels;
+  bool getScore=true;
+  bool getSingle=true;
+  bool getGreedy=true;
+  bool getMajority=true;
+  bool getStrict=true;
+  bool getAll=false;
+  bool getCount=false;  
   
-  string astralpath = string(dirname(argv[0])) + "/astral.4.7.8.jar";
+  vector<string> output_labels;
+  int path_length = wai_getExecutablePath(NULL, 0, NULL);
+  char* path = new char[path_length + 1];
+  int dirname_length;
+  wai_getExecutablePath(path, path_length, &dirname_length);  
+  path[path_length] = '\0';
+  
+  string astralpath = string(dirname(argv[0]), dirname_length) + "/astral.4.7.8.jar";
 
   Logger::disable("DEBUG");
 
@@ -53,35 +67,45 @@ int main(int argc, char** argv) {
       Logger::enable("INFO");
       Logger::enable("PROGRESS");
     }
-    if (string(argv[i]) == "--score") {
-      conf.analyses.push_back(new ScoreAnalysis());
-      output_labels.push_back("score");	
+    if (string(argv[i]) == "--noscore") {
+      getScore=false;
     }
 
+    if (string(argv[i]) == "--nosingle") {
+      getSingle=false;
+    }
+    if (string(argv[i]) == "--nogreedy") {
+      getSingle=false;
+    }
+    if (string(argv[i]) == "--nomajority") {
+      getMajority=false;
+    }
+    if (string(argv[i]) == "--nostrict") {
+      getStrict=false;
+    }
+    if (string(argv[i]) == "--nocount") {
+      getCount=false;
+    }
+
+    if (string(argv[i]) == "--score") {
+      getScore=true;
+    }
     if (string(argv[i]) == "--single") {
-      conf.analyses.push_back(new SingleTreeAnalysis());
-      output_labels.push_back("single");	
+      getSingle=true;
     }
     if (string(argv[i]) == "--greedy") {
-      conf.analyses.push_back(new ConsensusTreeAnalysis(0.0));
-      output_labels.push_back("greedy");	
+      getSingle=true;
     }
     if (string(argv[i]) == "--majority") {
-      conf.analyses.push_back(new ConsensusTreeAnalysis(0.5));
-      output_labels.push_back("majority");	
+      getMajority=true;
     }
     if (string(argv[i]) == "--strict") {
-      conf.analyses.push_back(new ConsensusTreeAnalysis(1.0));
-      output_labels.push_back("strict");	
-    }
-    if (string(argv[i]) == "--all") {
-      // conf.analyses.push_back();
-      // output_labels.push_back("all");	
+      getStrict=true;
     }
     if (string(argv[i]) == "--count") {
-      conf.analyses.push_back(new CountTreesAnalysis());
-      output_labels.push_back("count");	
+      getCount=true;
     }
+    
     if (string(argv[i]) == "--profile") {
       conf.profile="profile";
     }
@@ -92,8 +116,31 @@ int main(int argc, char** argv) {
     exit(-1);
   }
 
-
-
+  if (getScore) {
+    conf.analyses.push_back(new ScoreAnalysis());
+    output_labels.push_back("score");	
+  }
+  if (getSingle) {
+    conf.analyses.push_back(new SingleTreeAnalysis());
+    output_labels.push_back("single");	
+  }
+  if (getGreedy) {
+    conf.analyses.push_back(new ConsensusTreeAnalysis(0.0));
+    output_labels.push_back("greedy");	
+  }
+  if (getMajority) {
+    conf.analyses.push_back(new ConsensusTreeAnalysis(0.5));
+    output_labels.push_back("majority");	
+  }
+  if (getStrict) {
+    conf.analyses.push_back(new ConsensusTreeAnalysis(1.0));
+    output_labels.push_back("strict");	
+  }
+  if (getCount) {
+    conf.analyses.push_back(new CountTreesAnalysis());
+    output_labels.push_back("count");
+  }
+  
   conf.scorer = new FastRFTripartitionScorer(input);
 
   conf.taxon_extractor = new DefaultTaxonSetExtractor(input);

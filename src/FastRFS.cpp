@@ -11,10 +11,18 @@
 #include <cassert>
 #include <iostream>
 #include <cstdlib>
+#ifndef _WIN32
 #include <libgen.h>
+#endif
 #include "whereami.h"
 
 using namespace std;
+
+#if _WIN32
+char* realpath(char* s, void* n) {
+	return s;
+}
+#endif
 
 int main(int argc, char** argv) {
   vector<string> wastral_args;
@@ -32,6 +40,7 @@ int main(int argc, char** argv) {
   bool getAll=false;
   bool getCount=false;  
   
+
   vector<string> output_labels;
   int path_length = wai_getExecutablePath(NULL, 0, NULL);
   char* path = new char[path_length + 1];
@@ -39,7 +48,7 @@ int main(int argc, char** argv) {
   wai_getExecutablePath(path, path_length, &dirname_length);  
   path[path_length] = '\0';
   
-  string astralpath = string(path, dirname_length) + "/Astral/astral.5.5.9.jar";
+  string astralpath = string(path, dirname_length) + "/Astral/astral.5.6.1.jar";
 
   cout << astralpath << endl;
 
@@ -57,6 +66,7 @@ int main(int argc, char** argv) {
       assert(argc > i+1);
       i++;
       fclose(fopen(argv[i], "a"));
+
       output = string(realpath(argv[i], NULL));
     }
     if (string(argv[i]) == "-e" || string(argv[i]) == "--extra") {

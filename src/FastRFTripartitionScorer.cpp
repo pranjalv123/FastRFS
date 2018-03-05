@@ -112,6 +112,7 @@ bool FastRFTripartitionScorer::matches(const Tripartition& t, const Bipartition&
 }
 
 double FastRFTripartitionScorer::score(const Tripartition& t) {
+	DEBUG << "SCORING TRIPARTITION " << endl;
   double weight = 0;
 
   BitVectorFixed& t1_a1 = possibleA1.at(t.a1);
@@ -128,6 +129,7 @@ double FastRFTripartitionScorer::score(const Tripartition& t) {
     (t1_a1 & t2_b2) | (t2_a1 & t1_b2) | (t1_a2 & t2_b1) | (t2_a2 & t1_b1);
   
   for (int i : combinations) {
+	  DEBUG << i << endl;
     weight += weights[i];
   }
   

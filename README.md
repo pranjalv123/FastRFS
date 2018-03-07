@@ -1,7 +1,7 @@
 # FastRFS
 Fast Robinson Foulds Supertrees
 
-To build FastRFS,
+To build FastRFS you will first need [phylokit](https://github.com/pranjalv123/phylokit) and [phylonaut](https://github.com/pranjalv123/phylonaut),
 
    mkdir build
    cd build

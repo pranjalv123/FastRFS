@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
       getSingle=false;
     }
     if (string(argv[i]) == "--nogreedy") {
-      getSingle=false;
+      getGreedy=false;
     }
     if (string(argv[i]) == "--nomajority") {
       getMajority=false;
@@ -145,7 +145,7 @@ int main(int argc, char** argv) {
   conf.taxon_extractor = new DefaultTaxonSetExtractor(input);
 
   conf.extractors.push_back(new GLOBExtractor(input));
-  
+
 
   vector<string> trees = wASTRAL(conf);
 

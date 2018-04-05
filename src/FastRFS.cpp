@@ -1,6 +1,7 @@
 #include <phylonaut/wASTRAL.hpp>
 #include <phylonaut/DefaultTaxonSetExtractor.hpp>
 #include <phylonaut/ASTRALCladeExtractor.hpp>
+#include <phylonaut/GLOBExtractor.hpp>
 #include "FastRFTripartitionScorer.hpp"
 #include <phylonaut/SingleTreeAnalysis.hpp>
 #include <phylonaut/ConsensusTreeAnalysis.hpp>
@@ -30,23 +31,19 @@ int main(int argc, char** argv) {
   bool getMajority=true;
   bool getStrict=true;
   bool getAll=false;
-  bool getCount=false;  
-  
+  bool getCount=false;
+
   vector<string> output_labels;
   int path_length = wai_getExecutablePath(NULL, 0, NULL);
   char* path = new char[path_length + 1];
   int dirname_length;
-  wai_getExecutablePath(path, path_length, &dirname_length);  
+  wai_getExecutablePath(path, path_length, &dirname_length);
   path[path_length] = '\0';
-  
-  string astralpath = string(path, dirname_length) + "/Astral/astral.5.5.9.jar";
-
-  cout << astralpath << endl;
 
   Logger::disable("DEBUG");
 
-  Config conf;  
-  
+  Config conf;
+
   for(int i = 1; i < argc; i++) {
     if (string(argv[i]) == "-i" || string(argv[i]) == "--input") {
       assert(argc > i+1);
@@ -107,7 +104,7 @@ int main(int argc, char** argv) {
     if (string(argv[i]) == "--count") {
       getCount=true;
     }
-    
+
     if (string(argv[i]) == "--profile") {
       conf.profile="profile";
     }
@@ -120,42 +117,40 @@ int main(int argc, char** argv) {
 
   if (getScore) {
     conf.analyses.push_back(new ScoreAnalysis());
-    output_labels.push_back("score");	
+    output_labels.push_back("score");
   }
   if (getSingle) {
     conf.analyses.push_back(new SingleTreeAnalysis());
-    output_labels.push_back("single");	
+    output_labels.push_back("single");
   }
   if (getGreedy) {
     conf.analyses.push_back(new ConsensusTreeAnalysis(0.0));
-    output_labels.push_back("greedy");	
+    output_labels.push_back("greedy");
   }
   if (getMajority) {
     conf.analyses.push_back(new ConsensusTreeAnalysis(0.5));
-    output_labels.push_back("majority");	
+    output_labels.push_back("majority");
   }
   if (getStrict) {
     conf.analyses.push_back(new ConsensusTreeAnalysis(1.0));
-    output_labels.push_back("strict");	
+    output_labels.push_back("strict");
   }
   if (getCount) {
     conf.analyses.push_back(new CountTreesAnalysis());
     output_labels.push_back("count");
   }
-  
+
   conf.scorer = new FastRFTripartitionScorer(input);
 
   conf.taxon_extractor = new DefaultTaxonSetExtractor(input);
 
-  if (extra != "")
-    conf.extractors.push_back(new ASTRALCladeExtractor(astralpath, input, extra));
-  else
-    conf.extractors.push_back(new ASTRALCladeExtractor(astralpath, input));
+  conf.extractors.push_back(new GLOBExtractor(input));
   
+
   vector<string> trees = wASTRAL(conf);
 
   for (int i = 0; i < trees.size(); i++) {
-    cout << output_labels.at(i) << endl;    
+    cout << output_labels.at(i) << endl;
     cout << trees.at(i) << endl;
     if (output.size() ) {
       ofstream outfile(output + "." + output_labels.at(i));

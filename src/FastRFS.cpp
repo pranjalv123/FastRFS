@@ -40,6 +40,8 @@ int main(int argc, char** argv) {
   path[path_length] = '\0';
 
   Logger::disable("DEBUG");
+  Logger::enable("INFO");
+  Logger::enable("PROGRESS");
 
   Config conf;
 
@@ -64,6 +66,11 @@ int main(int argc, char** argv) {
       Logger::enable("DEBUG");
       Logger::enable("INFO");
       Logger::enable("PROGRESS");
+    }
+    if (string(argv[i]) == "--quiet") {
+      Logger::disable("DEBUG");
+      Logger::disable("INFO");
+      Logger::disable("PROGRESS");
     }
     if (string(argv[i]) == "--noscore") {
       getScore=false;

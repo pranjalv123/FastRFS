@@ -13,6 +13,7 @@
 #include <cstdlib>
 #include <libgen.h>
 #include "whereami.h"
+#include "RFSupportAnalysis.hpp"
 
 using namespace std;
 
@@ -126,7 +127,16 @@ int main(int argc, char** argv) {
     output_labels.push_back("score");
   }
   if (getSingle) {
-    conf.analyses.push_back(new SingleTreeAnalysis());
+    vector<string> input_trees;
+    string tree;
+    ifstream file(input);
+
+    while(getline(file, tree)) {
+      input_trees.push_back(tree);
+    }
+    file.close();
+
+    conf.analyses.push_back(new RFSupportAnalysis(input_trees));
     output_labels.push_back("single");
   }
   if (getGreedy) {

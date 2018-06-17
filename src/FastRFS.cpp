@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
   bool getMajority=true;
   bool getStrict=true;
   bool getAll=false;
-  bool getCount=false;
+  bool getCount=true;
 
   vector<string> output_labels;
   int path_length = wai_getExecutablePath(NULL, 0, NULL);

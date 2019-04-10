@@ -167,7 +167,7 @@ int main(int argc, char** argv) {
 
   vector<string> trees = wASTRAL(conf);
 
-  for (int i = 0; i < trees.size(); i++) {
+  for (size_t i = 0; i < trees.size(); i++) {
     cout << output_labels.at(i) << endl;
     cout << trees.at(i) << endl;
     if (output.size() ) {

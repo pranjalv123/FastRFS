@@ -65,9 +65,9 @@ void FastRFTripartitionScorer::setup(Config& conf, vector<Clade>& clades)
 
 int FastRFTripartitionScorer::addSourceTree(string tree) {
   unordered_set<Clade> clades;
-  newick_to_clades(tree, ts, clades);
+  newick_to_clades(tree, ts(), clades);
 
-  Clade tree_clade = newick_to_taxa(tree, ts );
+  Clade tree_clade = newick_to_taxa(tree, ts() );
   
   unordered_set<Clade> clade_complements;
  

@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
       getSingle=false;
     }
     if (string(argv[i]) == "--nogreedy") {
-      getSingle=false;
+      getGreedy=false;
     }
     if (string(argv[i]) == "--nomajority") {
       getMajority=false;
@@ -100,7 +100,7 @@ int main(int argc, char** argv) {
       getSingle=true;
     }
     if (string(argv[i]) == "--greedy") {
-      getSingle=true;
+      getGreedy=true;
     }
     if (string(argv[i]) == "--majority") {
       getMajority=true;

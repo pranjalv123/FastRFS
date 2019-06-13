@@ -1,6 +1,7 @@
 #include <phylonaut/wASTRAL.hpp>
 #include <phylonaut/DefaultTaxonSetExtractor.hpp>
 #include <phylonaut/ASTRALCladeExtractor.hpp>
+#include <phylonaut/SimpleCladeExtractor.hpp>
 #include "FastRFTripartitionScorer.hpp"
 #include <phylonaut/SingleTreeAnalysis.hpp>
 #include <phylonaut/ConsensusTreeAnalysis.hpp>
@@ -136,7 +137,7 @@ int main(int argc, char** argv) {
   if (score_only) {
     conf.analyses.push_back(new ScoreAnalysis());
     output_labels.push_back("score");
-    conf.extractors.push_back(new ASTRALCladeExtractor(scoretree, "", false, true));
+    conf.extractors.push_back(new SimpleCladeExtractor(scoretree));
     conf.scorer = new FastRFTripartitionScorer(input);
     conf.taxon_extractor = new DefaultTaxonSetExtractor(scoretree);    
   } else {

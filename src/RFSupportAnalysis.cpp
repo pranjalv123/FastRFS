@@ -47,6 +47,7 @@ stringstream RFSupportAnalysis::toTree(TaxonSet& ts, clade_bitset& bs, vector<Cl
     trees.push_back(tclades);
   }
 
+
   auto& subclades = tps.get_subclades(bs)[0];
   stringstream ss;
   if (bs.popcount() == 2) {
@@ -54,7 +55,7 @@ stringstream RFSupportAnalysis::toTree(TaxonSet& ts, clade_bitset& bs, vector<Cl
     for (Taxon t : bs) {
       tv.push_back(t);
     }
-    ss << "(" << ts[tv[0]] << "," << ts[tv[1]] << ")";
+    ss << "(" << ts[tv[0]] << "," << ts[tv[1]] << "):" << support(ts, bs, trees, tree_taxa);
   }
 
   else if (bs.popcount() == 1) {

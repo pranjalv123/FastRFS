@@ -1,6 +1,7 @@
 #include <phylonaut/wASTRAL.hpp>
 #include <phylonaut/DefaultTaxonSetExtractor.hpp>
 #include <phylonaut/ASTRALCladeExtractor.hpp>
+#include <phylonaut/SimpleCladeExtractor.hpp>
 #include "FastRFTripartitionScorer.hpp"
 #include <phylonaut/SingleTreeAnalysis.hpp>
 #include <phylonaut/ConsensusTreeAnalysis.hpp>
@@ -23,7 +24,9 @@ int main(int argc, char** argv) {
   string input;
   string output = "";
   string extra = "";
+  string scoretree = "";
   int debug = 0;
+  
 
   bool getScore=true;
   bool getSingle=true;
@@ -33,6 +36,8 @@ int main(int argc, char** argv) {
   bool getAll=false;
   bool getCount=true;
 
+  bool score_only = false;
+  
   vector<string> output_labels;
   int path_length = wai_getExecutablePath(NULL, 0, NULL);
   char* path = new char[path_length + 1];
@@ -63,6 +68,12 @@ int main(int argc, char** argv) {
       i++;
       extra = string(realpath(argv[i], NULL));
     }
+    if (string(argv[i]) == "--scoreonly") {
+      assert(argc > i+1);
+      i++;
+      scoretree = string(argv[i]);
+      score_only = true;
+    }
     if (string(argv[i]) == "--debug") {
       Logger::enable("DEBUG");
       Logger::enable("INFO");
@@ -81,7 +92,7 @@ int main(int argc, char** argv) {
       getSingle=false;
     }
     if (string(argv[i]) == "--nogreedy") {
-      getSingle=false;
+      getGreedy=false;
     }
     if (string(argv[i]) == "--nomajority") {
       getMajority=false;
@@ -100,7 +111,7 @@ int main(int argc, char** argv) {
       getSingle=true;
     }
     if (string(argv[i]) == "--greedy") {
-      getSingle=true;
+      getGreedy=true;
     }
     if (string(argv[i]) == "--majority") {
       getMajority=true;
@@ -122,49 +133,58 @@ int main(int argc, char** argv) {
     exit(-1);
   }
 
-  if (getScore) {
+
+  if (score_only) {
     conf.analyses.push_back(new ScoreAnalysis());
     output_labels.push_back("score");
-  }
-  if (getSingle) {
-    vector<string> input_trees;
-    string tree;
-    ifstream file(input);
-
-    while(getline(file, tree)) {
-      input_trees.push_back(tree);
+    conf.extractors.push_back(new SimpleCladeExtractor(scoretree));
+    conf.scorer = new FastRFTripartitionScorer(input);
+    conf.taxon_extractor = new DefaultTaxonSetExtractor(scoretree);    
+  } else {
+  
+    if (getScore) {
+      conf.analyses.push_back(new ScoreAnalysis());
+      output_labels.push_back("score");
     }
-    file.close();
+    if (getSingle) {
+      vector<string> input_trees;
+      string tree;
+      ifstream file(input);
 
-    conf.analyses.push_back(new RFSupportAnalysis(input_trees));
-    output_labels.push_back("single");
-  }
-  if (getGreedy) {
-    conf.analyses.push_back(new ConsensusTreeAnalysis(0.0));
-    output_labels.push_back("greedy");
-  }
-  if (getMajority) {
-    conf.analyses.push_back(new ConsensusTreeAnalysis(0.5));
-    output_labels.push_back("majority");
-  }
-  if (getStrict) {
-    conf.analyses.push_back(new ConsensusTreeAnalysis(1.0));
-    output_labels.push_back("strict");
-  }
-  if (getCount) {
-    conf.analyses.push_back(new CountTreesAnalysis());
-    output_labels.push_back("count");
-  }
+      while(getline(file, tree)) {
+	input_trees.push_back(tree);
+      }
+      file.close();
 
-  conf.scorer = new FastRFTripartitionScorer(input);
+      conf.analyses.push_back(new RFSupportAnalysis(input_trees));
+      output_labels.push_back("single");
+    }
+    if (getGreedy) {
+      conf.analyses.push_back(new ConsensusTreeAnalysis(0.0));
+      output_labels.push_back("greedy");
+    }
+    if (getMajority) {
+      conf.analyses.push_back(new ConsensusTreeAnalysis(0.5));
+      output_labels.push_back("majority");
+    }
+    if (getStrict) {
+      conf.analyses.push_back(new ConsensusTreeAnalysis(1.0));
+      output_labels.push_back("strict");
+    }
+    if (getCount) {
+      conf.analyses.push_back(new CountTreesAnalysis());
+      output_labels.push_back("count");
+    }
 
-  conf.taxon_extractor = new DefaultTaxonSetExtractor(input);
+    conf.scorer = new FastRFTripartitionScorer(input);
 
-  if (extra != "")
-    conf.extractors.push_back(new ASTRALCladeExtractor(input, extra));
-  else
-    conf.extractors.push_back(new ASTRALCladeExtractor(input));
+    conf.taxon_extractor = new DefaultTaxonSetExtractor(input);
 
+    if (extra != "")
+      conf.extractors.push_back(new ASTRALCladeExtractor(input, extra));
+    else
+      conf.extractors.push_back(new ASTRALCladeExtractor(input));
+  }
   vector<string> trees = wASTRAL(conf);
 
   for (size_t i = 0; i < trees.size(); i++) {

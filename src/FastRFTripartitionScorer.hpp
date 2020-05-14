@@ -9,10 +9,12 @@ class FastRFTripartitionScorer : public TripartitionScorer {
 public:
   FastRFTripartitionScorer(string genetreesfile) : treesfile(genetreesfile) {};
   void setup(Config& conf, vector<Clade>& clades);
-  int addSourceTree(string tree);
+  void addSourceTree(string tree);
   virtual double score (const Tripartition& t);
   bool matches(const Tripartition& t, const Bipartition& bp);
   int total_weight;
+  int total_leaves;
+  int n_trees;
   virtual double adjust_final_score(double score);
   virtual bool better(double newscore, double oldscore);
 private:

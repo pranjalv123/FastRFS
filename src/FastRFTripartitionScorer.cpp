@@ -16,9 +16,11 @@ void FastRFTripartitionScorer::setup(Config& conf, vector<Clade>& clades)
   string tree;
   ifstream file(treesfile);
   total_weight = 0;
-  int n_trees = 0;
+  total_leaves = 0;
+  n_trees = 0;
   while(getline(file, tree)) {
-    addSourceTree(tree);    
+    addSourceTree(tree);
+    n_trees++; 
     DEBUG << n_trees << "\t" << total_weight << endl;
   }
   INFO << "Total Weight: " << total_weight << endl;
@@ -63,12 +65,14 @@ void FastRFTripartitionScorer::setup(Config& conf, vector<Clade>& clades)
   }
 }
 
-int FastRFTripartitionScorer::addSourceTree(string tree) {
+void FastRFTripartitionScorer::addSourceTree(string tree) {
   unordered_set<Clade> clades;
   newick_to_clades(tree, ts(), clades);
 
   Clade tree_clade = newick_to_taxa(tree, ts() );
   
+  total_leaves += tree_clade.size();
+
   unordered_set<Clade> clade_complements;
  
 
@@ -84,7 +88,6 @@ int FastRFTripartitionScorer::addSourceTree(string tree) {
     }
   }
   total_weight += n;
-  return n;
 }
 
 bool FastRFTripartitionScorer::matches(const Tripartition& t, const Bipartition& bp) {
@@ -137,5 +140,8 @@ double FastRFTripartitionScorer::score(const Tripartition& t) {
 
 double FastRFTripartitionScorer::adjust_final_score(double score) {
   PROGRESS << "Raw Score: " << score << endl;
-  return ((total_weight - score) ) * 2;
+  int total_fp = total_weight - score;
+  int total_fn = total_leaves - (n_trees * 3) - score;
+  int total_rf = total_fp + total_fn;
+  return total_rf;
 }

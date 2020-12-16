@@ -23,6 +23,7 @@ int main(int argc, char** argv) {
 
   string input;
   string output = "";
+  string clades_file = "";
   string extra = "";
   string scoretree = "";
   int debug = 0;
@@ -35,6 +36,7 @@ int main(int argc, char** argv) {
   bool getStrict=true;
   bool getAll=false;
   bool getCount=true;
+  bool useAstral=true;
 
   bool score_only = false;
   
@@ -67,6 +69,11 @@ int main(int argc, char** argv) {
       assert(argc > i+1);
       i++;
       extra = string(realpath(argv[i], NULL));
+    }
+    if (string(argv[i]) == "--clades") {
+      assert(argc > i+1);
+      i++;
+      clades_file = string(realpath(argv[i], NULL));
     }
     if (string(argv[i]) == "--scoreonly") {
       assert(argc > i+1);
@@ -103,7 +110,10 @@ int main(int argc, char** argv) {
     if (string(argv[i]) == "--nocount") {
       getCount=false;
     }
-
+    if (string(argv[i]) == "--noastral") {
+      useAstral=false;
+    }
+	  
     if (string(argv[i]) == "--score") {
       getScore=true;
     }
@@ -180,10 +190,16 @@ int main(int argc, char** argv) {
 
     conf.taxon_extractor = new DefaultTaxonSetExtractor(input);
 
-    if (extra != "")
-      conf.extractors.push_back(new ASTRALCladeExtractor(input, extra));
-    else
-      conf.extractors.push_back(new ASTRALCladeExtractor(input));
+    if (useAstral) {
+      if (extra != "")
+        conf.extractors.push_back(new ASTRALCladeExtractor(input, extra));
+      else
+        conf.extractors.push_back(new ASTRALCladeExtractor(input));
+    }
+    if (clades_file.size()) {
+      conf.extractors.push_back(new SimpleCladeExtractor(clades_file));
+    }
+    
   }
   vector<string> trees = wASTRAL(conf);
 

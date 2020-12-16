@@ -1,11 +1,13 @@
 cmake_minimum_required (VERSION 2.6)
 project (FastRFS)
-OPTION(BUILD_STATIC "build static" ON)
+OPTION(BUILD_STATIC "build static" OFF)
 OPTION(BUILD_SHARED "build shared" ON)
 file(GLOB SOURCES *.cpp)
 
 add_definitions(-std=c++14 -g -O3 -Wall)
-
+include_directories("../../install/include"
+                    "../../install/include/phylonaut")
+link_directories("../../install/lib")
 
 if (BUILD_SHARED)
 	add_executable(FastRFS ${SOURCES} FastRFS.cpp)

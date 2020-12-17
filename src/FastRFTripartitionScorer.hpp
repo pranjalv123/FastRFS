@@ -1,9 +1,9 @@
 #ifndef FASTRF_TRIPARTITION_SCORER_HPP__
 #define FASTRF_TRIPARTITION_SCORER_HPP__
 
-#include <Clade.hpp>
-#include <BitVector.hpp>
-#include <phylonaut/TripartitionScorer.hpp>
+#include "phylokit/Clade.hpp"
+#include "phylokit/BitVector.hpp"
+#include "phylonaut/TripartitionScorer/TripartitionScorer.hpp"
 
 class FastRFTripartitionScorer : public TripartitionScorer {
 public:

@@ -1,24 +1,26 @@
-#include <phylonaut/wASTRAL.hpp>
-#include <phylonaut/DefaultTaxonSetExtractor.hpp>
-#include <phylonaut/ASTRALCladeExtractor.hpp>
-#include <phylonaut/SimpleCladeExtractor.hpp>
+#include "phylonaut/wASTRAL.hpp"
+#include "phylonaut/CladeExtractor/DefaultTaxonSetExtractor.hpp"
+#include "phylonaut/CladeExtractor/ASTRALCladeExtractor.hpp"
+#include "phylonaut/CladeExtractor/SimpleCladeExtractor.hpp"
 #include "FastRFTripartitionScorer.hpp"
-#include <phylonaut/SingleTreeAnalysis.hpp>
-#include <phylonaut/ConsensusTreeAnalysis.hpp>
-#include <phylonaut/CountTreesAnalysis.hpp>
-#include <phylonaut/ScoreAnalysis.hpp>
+#include "phylonaut/Analysis/SingleTreeAnalysis.hpp"
+#include "phylonaut/Analysis/ConsensusTreeAnalysis.hpp"
+#include "phylonaut/Analysis/CountTreesAnalysis.hpp"
+#include "phylonaut/Analysis/ScoreAnalysis.hpp"
+#include <glog/logging.h>
 #include <vector>
 #include <string>
 #include <cassert>
 #include <iostream>
 #include <cstdlib>
 #include <libgen.h>
-#include "whereami.h"
 #include "RFSupportAnalysis.hpp"
 
 using namespace std;
 
 int main(int argc, char** argv) {
+  google::InitGoogleLogging(argv[0]);
+
   vector<string> wastral_args;
 
   string input;
@@ -26,7 +28,6 @@ int main(int argc, char** argv) {
   string clades_file = "";
   string extra = "";
   string scoretree = "";
-  int debug = 0;
   
 
   bool getScore=true;
@@ -34,22 +35,12 @@ int main(int argc, char** argv) {
   bool getGreedy=true;
   bool getMajority=true;
   bool getStrict=true;
-  bool getAll=false;
   bool getCount=true;
   bool useAstral=true;
 
   bool score_only = false;
   
   vector<string> output_labels;
-  int path_length = wai_getExecutablePath(NULL, 0, NULL);
-  char* path = new char[path_length + 1];
-  int dirname_length;
-  wai_getExecutablePath(path, path_length, &dirname_length);
-  path[path_length] = '\0';
-
-  Logger::disable("DEBUG");
-  Logger::enable("INFO");
-  Logger::enable("PROGRESS");
 
   Config conf;
 
@@ -80,16 +71,6 @@ int main(int argc, char** argv) {
       i++;
       scoretree = string(argv[i]);
       score_only = true;
-    }
-    if (string(argv[i]) == "--debug") {
-      Logger::enable("DEBUG");
-      Logger::enable("INFO");
-      Logger::enable("PROGRESS");
-    }
-    if (string(argv[i]) == "--quiet") {
-      Logger::disable("DEBUG");
-      Logger::disable("INFO");
-      Logger::disable("PROGRESS");
     }
     if (string(argv[i]) == "--noscore") {
       getScore=false;

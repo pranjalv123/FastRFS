@@ -1,7 +1,7 @@
 #include "FastRFTripartitionScorer.hpp"
-#include <phylonaut/TripartitionScorer.hpp>
-#include <util/Logger.hpp>
-#include <newick.hpp>
+#include "phylonaut/TripartitionScorer/TripartitionScorer.hpp"
+#include <glog/logging.h>
+#include "phylokit/newick.hpp"
 
 #include <limits>
 #include <fstream>
@@ -21,9 +21,9 @@ void FastRFTripartitionScorer::setup(Config& conf, vector<Clade>& clades)
   while(getline(file, tree)) {
     addSourceTree(tree);
     n_trees++; 
-    DEBUG << n_trees << "\t" << total_weight << endl;
+    DLOG(INFO) << n_trees << "\t" << total_weight << endl;
   }
-  INFO << "Total Weight: " << total_weight << endl;
+  LOG(INFO) << "Total Weight: " << total_weight << endl;
 
   for (auto& i : clade_weights) {
     bipartitions.push_back(&(i.first));
@@ -32,10 +32,10 @@ void FastRFTripartitionScorer::setup(Config& conf, vector<Clade>& clades)
   
 
 
-  INFO << "Making possibilities lists\n";
+  LOG(INFO) << "Making possibilities lists\n";
 
 
-  int n = 0;
+  size_t n = 0;
   for (const Clade& clade : clades) {
     BitVectorFixed& bvf_a1 = (*(possibleA1.emplace(clade, weights.size()).first)).second;
     BitVectorFixed& bvf_a2 = (*(possibleA2.emplace(clade, weights.size()).first)).second;
@@ -45,21 +45,21 @@ void FastRFTripartitionScorer::setup(Config& conf, vector<Clade>& clades)
     for (unsigned int i = 0; i < bipartitions.size(); i++) {
       const Bipartition& bp = *(bipartitions[i]);
       if (clade.contains(bp.a1) && clade.overlap(bp.a2).size() == 0) {
-	bvf_a1.set(i);
+	      bvf_a1.set(i);
       }
       if (clade.overlap(bp.a1).size() > 0) {
-	bvf_b1.set(i);
+	      bvf_b1.set(i);
       }
       if (clade.contains(bp.a2) && clade.overlap(bp.a1).size() == 0) {
-	bvf_a2.set(i);
+	      bvf_a2.set(i);
       }
       if (clade.overlap(bp.a2).size() > 0) {
-	bvf_b2.set(i);
+	      bvf_b2.set(i);
       }
     }
     n++;
     if (n%1000 == 0 || n == clades.size()) {
-      INFO << "prepared " << n << "/" << clades.size() <<  endl;
+      LOG(INFO) << "prepared " << n << "/" << clades.size() <<  endl;
     }
     
   }
@@ -93,24 +93,18 @@ void FastRFTripartitionScorer::addSourceTree(string tree) {
 bool FastRFTripartitionScorer::matches(const Tripartition& t, const Bipartition& bp) {
 
   if (t.a1.contains(bp.a1) && (t.a1.overlap(bp.a2).size() == 0) && (t.a2.overlap(bp.a2).size() > 0)) {
-    //    DEBUG << "match 1\n";
     return true;
   }
   if (t.a2.contains(bp.a1) && (t.a2.overlap(bp.a2).size() == 0) && (t.a1.overlap(bp.a2).size() > 0)) {
-    //    DEBUG << "match 2\n";
     return true;
   }
 
   if (t.a1.contains(bp.a2) && (t.a1.overlap(bp.a1).size() == 0) && (t.a2.overlap(bp.a1).size() > 0)) {
-    //    DEBUG << "match 3\n";
     return true;
   }
   if (t.a2.contains(bp.a2) && (t.a2.overlap(bp.a1).size() == 0) && (t.a1.overlap(bp.a1).size() > 0)) {
-    //    DEBUG << "match 4\n";
     return true;
   }
-  
-  
   return false;
 }
 
@@ -139,7 +133,7 @@ double FastRFTripartitionScorer::score(const Tripartition& t) {
 }
 
 double FastRFTripartitionScorer::adjust_final_score(double score) {
-  PROGRESS << "Raw Score: " << score << endl;
+  LOG(INFO) << "Raw Score: " << score << endl;
   int total_fp = total_weight - score;
   int total_fn = total_leaves - (n_trees * 3) - score;
   int total_rf = total_fp + total_fn;

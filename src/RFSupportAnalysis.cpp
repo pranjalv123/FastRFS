@@ -1,13 +1,18 @@
 #include "RFSupportAnalysis.hpp"
 
-#include <phylonaut/TripartitionScorer.hpp>
+#include "phylonaut/TripartitionScorer/TripartitionScorer.hpp"
 #include <sstream>
+#include <vector>
+#include <string>
+using std::stringstream;
+using std::string;
+using std::vector;
 
 double support(TaxonSet& ts, clade_bitset& bs, vector<unordered_set<Clade>>& trees, vector<Clade>& tree_taxa) {
     double good = 0;
     double bad = 0;
 
-    for (int i = 0; i < trees.size(); i++) {
+    for (size_t i = 0; i < trees.size(); i++) {
       Clade this_clade(ts, bs);
       bool is_compatible = 1;
       if (this_clade.overlap_size(tree_taxa[i]) < 2)

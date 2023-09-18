@@ -2,8 +2,14 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 git_repository(
+    name = "com_github_bazelbuild_platforms",
+    commit = "4ad40ef271da8176d4fc0194d2089b8a76e19d7b",
+    remote = "https://github.com/bazelbuild/platforms"
+)
+
+git_repository(
     name = "com_github_nelhage_rules_boost",
-    commit = "9f9fb8b2f0213989247c9d5c0e814a8451d18d7f",
+    commit = "4ab574f9a84b42b1809978114a4664184716f4bf",
     remote = "https://github.com/nelhage/rules_boost",
     shallow_since = "1570056263 -0700",
 )
@@ -21,9 +27,9 @@ http_archive(
 
 http_archive(
     name = "com_github_google_glog",
-    sha256 = "62efeb57ff70db9ea2129a16d0f908941e355d09d6d83c9f7b18557c0a7ab59e",
-    strip_prefix = "glog-d516278b1cd33cd148e8989aec488b6049a4ca0b",
-    urls = ["https://github.com/google/glog/archive/d516278b1cd33cd148e8989aec488b6049a4ca0b.zip"],
+    sha256 = "122fb6b712808ef43fbf80f75c52a21c9760683dae470154f02bddfc61135022",
+    strip_prefix = "glog-0.6.0",
+    urls = ["https://github.com/google/glog/archive/v0.6.0.zip"],
 )
 
 git_repository(
